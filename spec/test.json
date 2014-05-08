@@ -1,0 +1,4 @@
+{
+	"test-key": "hulloo",
+	"override-me": "you will see this only when you have deploy-type set to 'DEV'"
+}
