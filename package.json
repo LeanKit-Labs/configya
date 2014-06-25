@@ -1,6 +1,6 @@
 {
   "name": "configya",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Config files that defer to env settings.",
   "main": "src/configya.js",
   "scripts": {
