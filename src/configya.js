@@ -1,43 +1,67 @@
-var fs = require( 'fs' ),
-	path = require( 'path' );
+var fs = require( 'fs' );
+var path = require( 'path' );
+var gnosis = require( 'gnosis' )();
+var _ = require( 'lodash' );
 
-var merge = function() {
-	var args = Array.prototype.slice.call( arguments );
-	var obj = {};
-	while( args.length > 0 ) {
-		var x = args.shift();
-		for( key in x ) {
-			var val = x [ key ];
-			if( val ) {
-				obj[ key ] = val;
+function ensurePath( target, val, paths ) {
+	var key = paths.shift();
+
+	if ( paths.length === 0 ) {
+		target[ key ] = val;
+	} else {
+		target[ key ] = target[ key ] || {};
+		ensurePath( target[ key ], val, paths );
+	}
+}
+
+function parseEnvVarsIntoConfig( config ) {
+	var undRegx = /^[_]+/;
+	gnosis.traverse( process.env, function( instance, key, val, meta, root ) {
+		var k = key.toLowerCase();
+		config.__env__[ key ] = val;
+		var paths = undRegx.test( key ) ? [ k ] : k.split( "_" );
+		ensurePath( config, val, paths );
+	} );
+}
+
+function parseFileIntoConfig( config, pathToCfg, options ) {
+	var fullPath = path.resolve( pathToCfg );
+	if ( fs.existsSync( fullPath ) ) {
+		try {
+			var raw = fs.readFileSync( fullPath );
+			var json = JSON.parse( raw );
+			if ( options.preferCfgFile ) {
+				_.merge( config, json );
+			} else {
+				_.defaults( config, json );
 			}
+		} catch ( err ) {
+			console.log( 'error parsing configuration at "', fullPath, '"', err );
 		}
 	}
-	return obj;
-};
+}
 
 module.exports = function( configFile ) {
+	var preferCfgFile = process.env[ 'deploy-type' ] === 'DEV';
 	var config = {
+		__env__: {},
+		// Deprecated, but still here for backwards compat ONLY
 		get: function( key, defaultValue ) {
-			var envVal = process.env[ key ];
-			var useConfigBeforeEnvironmentVar = process.env[ 'deploy-type' ] === 'DEV';
-			if(useConfigBeforeEnvironmentVar) {
-				return this[ key ] || envVal || defaultValue;
+			var val = this.__env__[ key ];
+			if ( preferCfgFile || !val ) {
+				val = this[ key ] || val;
 			}
-			return envVal || this[ key ] || defaultValue;
+			return val || defaultValue;
 		}
 	};
-	if( configFile ) {
-		var fullPath = path.resolve( configFile );
-		if( fs.existsSync( fullPath )  ) {
-			try {
-				var raw = fs.readFileSync( fullPath );
-				var json = JSON.parse( raw );
-				config = merge( config, json );
-			} catch ( err ) {
-				console.log( 'error parsing configuration at "', fullPath, '"', err );
-			}
-		}
+
+	parseEnvVarsIntoConfig( config );
+
+	if ( configFile ) {
+		parseFileIntoConfig( config, configFile, {
+			preferCfgFile: preferCfgFile
+		} );
 	}
+
 	return config;
 };
