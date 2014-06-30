@@ -35,7 +35,7 @@ describe( 'when using deprecated API (calling get())', function() {
 		var cfg;
 
 		before( function() {
-			process.env[ 'missing-from-config' ] = 'env';
+			process.env[ 'missing_from_config' ] = 'env';
 			process.env[ 'override-me' ] = 'OVERRIDE!';
 			cfg = require( '../src/configya.js' )( './spec/test.json' );
 		} );
@@ -52,7 +52,7 @@ describe( 'when using deprecated API (calling get())', function() {
 			} );
 
 			it( 'environment key should return value', function() {
-				cfg.get( 'missing-from-config' )
+				cfg.get( 'missing_from_config' )
 					.should.equal( 'env' );
 			} );
 
@@ -82,7 +82,7 @@ describe( 'when using deprecated API (calling get())', function() {
 			} );
 
 			it( 'environment key should return value', function() {
-				cfg.get( 'missing-from-config' )
+				cfg.get( 'missing_from_config' )
 					.should.equal( 'env' );
 			} );
 
@@ -93,9 +93,8 @@ describe( 'when using deprecated API (calling get())', function() {
 
 		} );
 		after( function() {
-			process.env[ 'missing-from-config' ] = '';
-			process.env[ 'test-key' ] = '';
-			process.env[ 'deploy-type' ] = '';
+			delete process.env[ 'missing_from_config' ];
+			delete process.env[ 'deploy-type' ];
 		} );
 	} );
 } );
@@ -125,7 +124,7 @@ describe( 'when accessing configuration data directly (new API)', function() {
 			var cfg;
 
 			before( function() {
-				process.env[ 'missing-from-config' ] = 'env';
+				process.env[ 'missing_from_config' ] = 'env';
 				process.env[ 'override-me' ] = 'OVERRIDE!';
 				cfg = require( '../src/configya.js' )( './spec/test.json' );
 			} );
@@ -137,7 +136,7 @@ describe( 'when accessing configuration data directly (new API)', function() {
 				} );
 
 				it( 'environment key should return value', function() {
-					cfg[ 'missing-from-config' ]
+					cfg.missing.from.config
 						.should.equal( 'env' );
 				} );
 
@@ -164,7 +163,7 @@ describe( 'when accessing configuration data directly (new API)', function() {
 		} );
 
 		it( 'environment key should return value', function() {
-			cfg[ 'missing-from-config' ]
+			cfg[ 'missing_from_config' ]
 				.should.equal( 'env' );
 		} );
 
@@ -175,8 +174,7 @@ describe( 'when accessing configuration data directly (new API)', function() {
 
 	} );
 	after( function() {
-		process.env[ 'missing-from-config' ] = '';
-		process.env[ 'test-key' ] = '';
-		process.env[ 'deploy-type' ] = '';
+		delete process.env[ 'missing_from_config' ];
+		delete process.env[ 'deploy-type' ];
 	} );
 } );

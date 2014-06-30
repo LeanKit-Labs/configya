@@ -9,8 +9,9 @@ function ensurePath( target, val, paths ) {
 	if ( paths.length === 0 ) {
 		target[ key ] = val;
 	} else {
-		target[ key ] = target[ key ] || {};
-		ensurePath( target[ key ], val, paths );
+		var child = target[ key ] || {};
+		target[ key ] = child;
+		ensurePath( child, val, paths );
 	}
 }
 
@@ -19,6 +20,7 @@ function parseEnvVarsIntoConfig( config ) {
 	gnosis.traverse( process.env, function( instance, key, val, meta, root ) {
 		var k = key.toLowerCase();
 		config.__env__[ key ] = val;
+		config[ key ] = val;
 		var paths = undRegx.test( key ) ? [ k ] : k.split( "_" );
 		ensurePath( config, val, paths );
 	} );
