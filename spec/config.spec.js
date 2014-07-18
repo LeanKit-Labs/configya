@@ -173,6 +173,39 @@ describe( 'when accessing configuration data directly (new API)', function() {
 		} );
 
 	} );
+
+	describe( 'with nested file key', function() {
+		var cfg;
+
+		before( function() {
+			cfg = require( '../src/configya.js' )( './spec/test.json' );
+		} );
+
+		it( 'should contain original key', function() {
+			cfg[ 'NESTED_KEY' ].should.equal( 'a test of nested keys from files' );
+		} );
+
+		it( 'should contain nested key format', function() {
+			cfg.nested.key.should.equal( 'a test of nested keys from files' );
+		} );
+	} );
+
+	describe( 'with defaults literal', function() {
+		var cfg;
+
+		before( function() {
+			cfg = require( '../src/configya.js' )( { 'missing_from_config': 'override-me', 'default_key': 'ohhai' } );
+		} );
+
+		it( 'should override default key from env', function() {
+			cfg.missing.from.config.should.equal( 'env' );
+		} );
+
+		it( 'should supply default for missing key', function() {
+			cfg.default.key.should.equal( 'ohhai' );
+		} );
+	} );
+
 	after( function() {
 		delete process.env[ 'missing_from_config' ];
 		delete process.env[ 'deploy-type' ];
