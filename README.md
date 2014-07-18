@@ -1,50 +1,60 @@
 # configya
 Stupid simple configuration.
 
-##What & How
-`configya` reads your environment variables as well as an optional configuration file (you provide the path, in that case), and returns a configuration object to you.
+## What & How
+`configya` reads the following:
+ * environment variables
+ * optional configuration 
+ * defaults hash
 
-###Environment Variables
-`configya` will parse your environment variables into an object hierarchy if you use underscores to delimit them. For example, if you have an environment variable called `RABBIT_BROKER_IP` set to "127.0.0.1", and another one called `RABBIT_BROKER_PORT` (set to 5672), they will be parsed to this representation:
+**Note**: it is impossible to have both a configuration file and a defaults hash. Pick one.
 
+Unless you've set a `deploy-type` environment variable = 'DEV', `configya` will always overwrite keys from a configuration file or defaults hash with duplicates found in the environment.
 
-	{
-		rabbit: {
-			broker: {
-				ip: "127.0.0.1",
-				port: "5672"
-			}
+### Key Parsing
+`configya` parses all sources into an object hierarchy based on `_` delimited key names. For example, if you have a key named `RABBIT_BROKER_IP` set to '127.0.0.1', and another named `RABBIT_BROKER_PORT` set to 5672, the resulting configuration object will be:
+
+```javascript
+{
+	rabbit: {
+		broker: {
+			ip: "127.0.0.1",
+			port: "5672"
 		}
 	}
+}
+```
+**Note**: All keys are lower-cased to eliminate the need for guessing games (and capslock)
 
 
-Notice that the environment variables are transformed to lower case as well.
+### Original Keys
+The original keys are technically still stored on the object based on their source.
+ * \__env__ for original environment keys
+ * \__defaults__ for keys coming from a defaults hash
+ * \__file__ for keys coming from a file
 
-By default, configya will prefer to use your environment variables. If you provide a config file as well, it will still prefer environment variables unless you add this to your environment variables: `deploy-type=DEV`. With `deploy-type` set to DEV, `configya` will use values from your config file, *if they exist*, before an environment variable.
+**Note**: These are really here for diagnostic/backwards compatibility. You shouldn't use/rely on them in your code.
  
 ## Usage
 
+```javascript
 	//load configya without a config file (using only environment)
 	var cfg = require('configya')();
 
-	//load configta with a config file as well
+	//load configya with a config file as well
 	var cfg = require('configya')('./path/to/configuration.json');
 
+	//load configya with a defaults hash
+	var cfg = require('configya')( { RABBIT_BROKER_PORT: 5672 } );
+
 	var port = cfg.rabbit.broker.port; // etc.
-
-
-For the oddball edge case(s), the environment variables are also available on `configya` in an un-transformed state:
-
-
-	// This isn't how you want to get at your config data....
-	var port = cfg.__env__.RABBIT_BROKER_PORT;
-
+```
 
 ## Backwards Compatibility
 
-The original version of `configya` (v0.0.3) used a `get` method to retrieve configuration values. This is technically still supported, though we recommend using the approach described above. Here's a usage example based on the older API:
+The original version of `configya` used a `get` method to retrieve configuration values with the ability to specify a default/fallback if the key were missing. This is technically still supported, but we think the new approach (nested keys) is nicer. Here's an example of the original API:
 
-
+```javascript
 	var config = require( 'configya' )( './path/config.json' );
 
 	// get the value from the config file, if an 
@@ -54,4 +64,4 @@ The original version of `configya` (v0.0.3) used a `get` method to retrieve conf
 	config.get( 'key' );
 
 	config.get( 'key', defaultValue );
-
+```
