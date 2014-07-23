@@ -7,9 +7,9 @@ Stupid simple configuration.
  * optional configuration 
  * defaults hash
 
-**Note**: it is impossible to have both a configuration file and a defaults hash. Pick one.
+**Note**: you can now provide both a configuration file and a defaults object
 
-Unless you've set a `deploy-type` environment variable = 'DEV', `configya` will always overwrite keys from a configuration file or defaults hash with duplicates found in the environment.
+Unless you've set a `deploy-type` environment variable = 'DEV', `configya` will always overwrite keys from a configuration file and defaults hash with duplicates found in the environment.
 
 ### Key Parsing
 `configya` parses all sources into an object hierarchy based on `_` delimited key names. For example, if you have a key named `RABBIT_BROKER_IP` set to '127.0.0.1', and another named `RABBIT_BROKER_PORT` set to 5672, the resulting configuration object will be:
@@ -26,7 +26,6 @@ Unless you've set a `deploy-type` environment variable = 'DEV', `configya` will 
 ```
 **Note**: All keys are lower-cased to eliminate the need for guessing games (and capslock)
 
-
 ### Original Keys
 The original keys are technically still stored on the object based on their source.
  * \__env__ for original environment keys
@@ -38,14 +37,17 @@ The original keys are technically still stored on the object based on their sour
 ## Usage
 
 ```javascript
-	//load configya without a config file (using only environment)
-	var cfg = require('configya')();
+	//without a config file or defaults (using only environment)
+	var cfg = require( 'configya' )();
 
-	//load configya with a config file as well
-	var cfg = require('configya')('./path/to/configuration.json');
+	//with a config file as well
+	var cfg = require( 'configya' )( './path/to/configuration.json' );
 
-	//load configya with a defaults hash
-	var cfg = require('configya')( { RABBIT_BROKER_PORT: 5672 } );
+	//with a defaults hash
+	var cfg = require( 'configya' )( { RABBIT_BROKER_PORT: 5672 } );
+
+	//with defaults and a config (order of args doesn't matter)
+	var cfg = require( 'configya' )( { rabbit: { broker: { port: 5672 } } }, './path/to/configuration.json' );
 
 	var port = cfg.rabbit.broker.port; // etc.
 ```

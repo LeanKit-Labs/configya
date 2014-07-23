@@ -30,6 +30,24 @@ describe( 'when using deprecated API (calling get())', function() {
 		} );
 	} );
 
+	describe( 'when loading valid config with defaults but no environment variables', function() {
+		var cfg = require( '../src/configya.js' )( './spec/test.json', 
+				{ nested: { key: 'imma default!' }, another: { key: 'hiya' } } );
+
+		it( 'should prefer file value over default', function() {
+			cfg.nested.key.should.equal( 'a test of nested keys from files' );
+		} );
+
+		it( 'missing key should return default', function() {
+			cfg.another.key.should.equal( 'hiya' );
+		} );
+
+		it( 'valid key should return value', function() {
+			cfg.get( 'test-key' )
+				.should.equal( 'hulloo' );
+		} );
+	} );
+
 
 	describe( 'when loading valid config with environment variables', function() {
 		var cfg;
@@ -206,7 +224,32 @@ describe( 'when accessing configuration data directly (new API)', function() {
 		} );
 	} );
 
+	describe( 'with identical child trees', function() {
+		var cfg
+		before( function() {
+			cfg = require( '../src/configya.js' )( 
+				{ 
+					redis: { address: '127.0.0.1', port: 1234 },
+					riak: { address: 'riak1', port: 5678 }
+				} );
+			process.env[ 'REDIS_PORT' ] = 6379;
+			process.env[ 'RIAK_PORT' ] = 8087;
+		} );
+
+		it( 'should keep environment ports seperate', function() {
+			cfg.riak.port.should.equal( '8087' );
+			cfg.redis.port.should.equal( '6379' );
+		} );
+
+		it( 'should keep default addresses seperate', function() {
+			cfg.redis.address.should.equal( '127.0.0.1' );
+			cfg.riak.address.should.equal( 'riak1' );
+		} );
+	} );
+
 	after( function() {
+		delete process.env[ 'redis_port' ];
+		delete process.env[ 'riak_port' ];
 		delete process.env[ 'missing_from_config' ];
 		delete process.env[ 'deploy-type' ];
 	} );
