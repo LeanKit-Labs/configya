@@ -3,6 +3,18 @@ var path = require( 'path' );
 var gnosis = require( 'gnosis' )();
 var _ = require( 'lodash' );
 
+function deepMerge( target, source, overwrite ) {
+	_.each( source, function( val, key ) {
+		var original = target[ key ];
+		if( _.isObject( val ) ) {
+			if( original ) { deepMerge( original, val ); }
+			else { target[ key ] = val; }
+		} else {
+			 target[ key ] = ( ( original == undefined ) || overwrite ) ? val : original;  
+		}
+	} );
+}
+
 function ensurePath( target, val, paths ) {
 	var key = paths.shift();
 
@@ -30,50 +42,45 @@ function parseIntoTarget( source, target, original ) {
 	return target;
 }
 
-function parseFileIntoConfig( config, pathToCfg, options ) {
+function readConfig( pathToCfg ) {
 	var fullPath = path.resolve( pathToCfg );
 	if ( fs.existsSync( fullPath ) ) {
 		try {
 			var raw = fs.readFileSync( fullPath );
-			var json = JSON.parse( raw );
-			var file = { __file__: {} };
-			parseIntoTarget( json, file, '__file__' );
-			if ( options.preferCfgFile ) {
-				_.merge( config, file );
-			} else {
-				_.defaults( config, file );
-			}
+			return JSON.parse( raw );
 		} catch ( err ) {
 			console.log( 'error parsing configuration at "', fullPath, '"', err );
+			return {};
 		}
 	}
 }
 
-module.exports = function( option ) {
+module.exports = function() {
+	var args = Array.prototype.slice.call( arguments );
+	var file = _.where( args, _.isString )[ 0 ];
+	var hash = _.where( args, _.isObject )[ 0 ] || {};
+	var defaults = { __defaults__: {} };
+	var fileHash = { __file__: {} };
+	var envHash = { __env__: {} };
+	var json = file ? readConfig( file ) : {};
 	var preferCfgFile = process.env[ 'deploy-type' ] === 'DEV';
+	
 	var config = {
 		__env__: {},
 		// Deprecated, but still here for backwards compat ONLY
 		get: function( key, defaultValue ) {
-			var val = this.__env__[ key ];
-			if ( preferCfgFile || !val ) {
-				val = this[ key ] || val;
-			}
-			return val || defaultValue;
+			return this[ key ] || defaultValue;
 		}
 	};
-
-	parseIntoTarget( process.env, config, '__env__' );
-
-	if ( _.isString( option ) ) {
-		parseFileIntoConfig( config, option, {
-			preferCfgFile: preferCfgFile
-		} );
-	} else if( option ) {
-		var defaults = { __defaults__: {} };
-		parseIntoTarget( option, defaults, '__defaults__' );
-		_.defaults( config, defaults );
-	}
+	
+	parseIntoTarget( process.env, envHash, '__env__' );
+	parseIntoTarget( hash, defaults, '__defaults__' );
+	parseIntoTarget( json, fileHash, '__file__' );
+	var fileOp = preferCfgFile ? 'merge' : 'defaults';
+	
+	_.merge( config, envHash );
+	deepMerge( config, fileHash, preferCfgFile );
+	deepMerge( config, defaults );
 
 	return config;
 };
