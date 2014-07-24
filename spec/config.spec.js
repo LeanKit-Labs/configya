@@ -1,6 +1,5 @@
 require( 'should' );
 
-
 describe( 'when using deprecated API (calling get())', function() {
 	describe( 'when loading config that doesn\'t exist', function() {
 		var cfg = require( '../src/configya.js' )( './spec/non-existant.json' );
@@ -46,7 +45,6 @@ describe( 'when using deprecated API (calling get())', function() {
 				.should.equal( 'hulloo' );
 		} );
 	} );
-
 
 	describe( 'when loading valid config with environment variables', function() {
 		var cfg;
@@ -166,6 +164,7 @@ describe( 'when accessing configuration data directly (new API)', function() {
 		} );
 
 	} );
+
 	describe( 'with deploy-type set to DEV for testing', function() {
 		var cfg;
 
@@ -257,7 +256,28 @@ describe( 'when accessing configuration data directly (new API)', function() {
 		it( 'should not overwrite root property', function() {
 			cfg[ 'test-key' ].should.equal( 'root key value' );
 		} );
-	} )
+	} );
+
+	describe( 'with empty default property', function() {
+		var cfg;
+		before( function() {
+			cfg = require( '../src/configya.js' )( 
+				{
+					integration: {
+						agent: {
+							loglevel: 'info',
+							id: 'p6-test'
+						}
+					} 
+				},
+				'./spec/test.json' );
+		} );
+
+		it( 'should not overwrite root property', function() {
+			cfg.integration.agent.id.should.equal( 'test123' );
+			cfg.integration.agent.loglevel.should.equal( 'trace' );
+		} );
+	} );
 
 	after( function() {
 		delete process.env[ 'test_redis_port' ];

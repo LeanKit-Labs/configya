@@ -20,7 +20,7 @@ function ensurePath( target, val, paths ) {
 	if ( paths.length === 0 ) {
 		target[ k ] = val;
 	} else {
-		var child = target[ key ] || {};
+		var child = target[ k ] || {};
 		target[ k ] = child;
 		ensurePath( child, val, paths );
 	}

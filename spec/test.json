@@ -1,5 +1,7 @@
 {
 	"test-key": "hulloo",
 	"override-me": "you will see this only when you have deploy-type set to 'DEV'",
-	"NESTED_KEY": "a test of nested keys from files"
+	"NESTED_KEY": "a test of nested keys from files",
+	"INTEGRATION_AGENT_LOGLEVEL": "trace",
+	"INTEGRATION_AGENT_ID": "test123"
 }
