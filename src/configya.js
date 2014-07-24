@@ -1,6 +1,5 @@
 var fs = require( 'fs' );
 var path = require( 'path' );
-var gnosis = require( 'gnosis' )();
 var _ = require( 'lodash' );
 
 function deepMerge( target, source, overwrite ) {
@@ -17,29 +16,31 @@ function deepMerge( target, source, overwrite ) {
 
 function ensurePath( target, val, paths ) {
 	var key = paths.shift();
-
+		k = key.toLowerCase();
 	if ( paths.length === 0 ) {
-		target[ key ] = val;
+		target[ k ] = val;
 	} else {
 		var child = target[ key ] || {};
-		target[ key ] = child;
+		target[ k ] = child;
 		ensurePath( child, val, paths );
 	}
 }
 
-function parseIntoTarget( source, target, original ) {
-	var undRegx = /^[_]+/;
-	gnosis.traverse( source, function( instance, key, val, meta, root ) {
-		var k = key.toLowerCase();
-		target[ k ] = val;
+function parseIntoTarget( source, target, cache ) {
+	var preRgx = /^[_]*/,
+		postRgx = /[_]*$/;
+	_.each( source, function( val, key ) {
+		var k = key.toLowerCase(),
+			scrubbed = key.replace( preRgx, '' ).replace( postRgx, '' ),
+			paths = scrubbed.split( '_' );
 		target[ key ] = val;
-		if( original ) {
-			target[ original ][ key ] = val;
-		}
-		var paths = undRegx.test( key ) ? [ k ] : k.split( "_" );
+		target[ k ] = val;
 		ensurePath( target, val, paths );
+		if( cache ) { 
+			target[ cache ][ key ] = val;
+			target[ cache ][ k ] = val;
+		}
 	} );
-	return target;
 }
 
 function readConfig( pathToCfg ) {
