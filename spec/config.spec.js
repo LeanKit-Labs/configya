@@ -1,6 +1,5 @@
 require( 'should' );
 
-
 describe( 'when using deprecated API (calling get())', function() {
 	describe( 'when loading config that doesn\'t exist', function() {
 		var cfg = require( '../src/configya.js' )( './spec/non-existant.json' );
@@ -33,7 +32,6 @@ describe( 'when using deprecated API (calling get())', function() {
 	describe( 'when loading valid config with defaults but no environment variables', function() {
 		var cfg = require( '../src/configya.js' )( './spec/test.json', 
 				{ nested: { key: 'imma default!' }, another: { key: 'hiya' } } );
-
 		it( 'should prefer file value over default', function() {
 			cfg.nested.key.should.equal( 'a test of nested keys from files' );
 		} );
@@ -47,7 +45,6 @@ describe( 'when using deprecated API (calling get())', function() {
 				.should.equal( 'hulloo' );
 		} );
 	} );
-
 
 	describe( 'when loading valid config with environment variables', function() {
 		var cfg;
@@ -167,6 +164,7 @@ describe( 'when accessing configuration data directly (new API)', function() {
 		} );
 
 	} );
+
 	describe( 'with deploy-type set to DEV for testing', function() {
 		var cfg;
 
@@ -227,29 +225,63 @@ describe( 'when accessing configuration data directly (new API)', function() {
 	describe( 'with identical child trees', function() {
 		var cfg
 		before( function() {
+			process.env[ 'test_redis_port' ] = 6379;
+			process.env[ 'test_riak_port' ] = 8087;
 			cfg = require( '../src/configya.js' )( 
 				{ 
-					redis: { address: '127.0.0.1', port: 1234 },
-					riak: { address: 'riak1', port: 5678 }
+					test: { 
+						redis: { address: '127.0.0.1', port: 1234 },
+						riak: { address: 'riak1', port: 5678 }
+					}
 				} );
-			process.env[ 'REDIS_PORT' ] = 6379;
-			process.env[ 'RIAK_PORT' ] = 8087;
 		} );
 
 		it( 'should keep environment ports seperate', function() {
-			cfg.riak.port.should.equal( '8087' );
-			cfg.redis.port.should.equal( '6379' );
+			cfg.test.riak.port.should.equal( '8087' );
+			cfg.test.redis.port.should.equal( '6379' );
 		} );
 
 		it( 'should keep default addresses seperate', function() {
-			cfg.redis.address.should.equal( '127.0.0.1' );
-			cfg.riak.address.should.equal( 'riak1' );
+			cfg.test.riak.address.should.equal( 'riak1' );
+			cfg.test.redis.address.should.equal( '127.0.0.1' );
+		} );
+	} );
+
+	describe( 'with child property matching root property', function() {
+		var cfg;
+		before( function() {
+			cfg = require( '../src/configya.js' )( { 'test-key': 'root key value', child: { 'test-key': 'child key value' } } );
+		} );
+
+		it( 'should not overwrite root property', function() {
+			cfg[ 'test-key' ].should.equal( 'root key value' );
+		} );
+	} );
+
+	describe( 'with empty default property', function() {
+		var cfg;
+		before( function() {
+			cfg = require( '../src/configya.js' )( 
+				{
+					integration: {
+						agent: {
+							loglevel: 'info',
+							id: 'p6-test'
+						}
+					} 
+				},
+				'./spec/test.json' );
+		} );
+
+		it( 'should not overwrite root property', function() {
+			cfg.integration.agent.id.should.equal( 'test123' );
+			cfg.integration.agent.loglevel.should.equal( 'trace' );
 		} );
 	} );
 
 	after( function() {
-		delete process.env[ 'redis_port' ];
-		delete process.env[ 'riak_port' ];
+		delete process.env[ 'test_redis_port' ];
+		delete process.env[ 'test_riak_port' ];
 		delete process.env[ 'missing_from_config' ];
 		delete process.env[ 'deploy-type' ];
 	} );
