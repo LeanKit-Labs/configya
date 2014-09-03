@@ -28,7 +28,7 @@ function ensurePath( target, val, paths ) {
 
 function parseIntoTarget( source, target, cache, prefix ) {
 	var preRgx = /^[_]*/;
-	var prefixRgx = new RegExp("^"+prefix+"_");
+	var prefixRgx = new RegExp("^"+prefix+"_","i");
 	var postRgx = /[_]*$/;
 
 	_.each( source, function( val, key ) {
@@ -38,7 +38,7 @@ function parseIntoTarget( source, target, cache, prefix ) {
 		var scrubbed = key.replace( preRgx, '' ).replace( postRgx, '' );
 		var paths = scrubbed.split( '_' );
 
-		if(paths[0] === prefix){
+		if(prefixRgx.test(paths[0])){
 			paths.shift();
 		}
 

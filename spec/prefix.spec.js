@@ -20,7 +20,7 @@ describe( 'when accessing configuration data directly while providing environmen
 		var cfg;
 
 		before( function() {
-			process.env[ 'lk_missing_from_config' ] = 'lol';
+			process.env[ 'LK_MISSING_FROM_CONFIG' ] = 'lol';
 			process.env[ 'lk_override-me' ] = 'OVERRIDDEN!';
 			cfg = require( '../src/configya.js' )({
 				file: './spec/test.json',
@@ -29,7 +29,7 @@ describe( 'when accessing configuration data directly while providing environmen
 		} );
 
 		after( function() {
-			delete process.env[ 'lk_missing_from_config' ];
+			delete process.env[ 'LK_MISSING_FROM_CONFIG' ];
 			delete process.env[ 'lk_override-me' ];
 		} );
 
