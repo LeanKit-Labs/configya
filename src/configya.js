@@ -9,7 +9,7 @@ function deepMerge( target, source, overwrite ) {
 			if( original ) { deepMerge( original, val ); }
 			else { target[ key ] = val; }
 		} else {
-			 target[ key ] = ( ( original == undefined ) || overwrite ) ? val : original;  
+			 target[ key ] = ( ( original == undefined ) || overwrite ) ? val : original;
 		}
 	} );
 }
@@ -26,17 +26,26 @@ function ensurePath( target, val, paths ) {
 	}
 }
 
-function parseIntoTarget( source, target, cache ) {
-	var preRgx = /^[_]*/,
-		postRgx = /[_]*$/;
+function parseIntoTarget( source, target, cache, prefix ) {
+	var preRgx = /^[_]*/;
+	var prefixRgx = new RegExp("^"+prefix+"_","i");
+	var postRgx = /[_]*$/;
+
 	_.each( source, function( val, key ) {
-		var k = key.toLowerCase(),
-			scrubbed = key.replace( preRgx, '' ).replace( postRgx, '' ),
-			paths = scrubbed.split( '_' );
+		key = key.replace(prefixRgx,'');
+
+		var k = key.toLowerCase();
+		var scrubbed = key.replace( preRgx, '' ).replace( postRgx, '' );
+		var paths = scrubbed.split( '_' );
+
+		if(prefixRgx.test(paths[0])){
+			paths.shift();
+		}
+
 		target[ key ] = val;
 		target[ k ] = val;
 		ensurePath( target, val, paths );
-		if( cache ) { 
+		if( cache ) {
 			target[ cache ][ key ] = val;
 			target[ cache ][ k ] = val;
 		}
@@ -56,16 +65,14 @@ function readConfig( pathToCfg ) {
 	}
 }
 
-module.exports = function() {
-	var args = Array.prototype.slice.call( arguments );
-	var file = _.where( args, _.isString )[ 0 ];
-	var hash = _.where( args, _.isObject )[ 0 ] || {};
-	var defaults = { __defaults__: {} };
+function buildConfig(options){
+	var defaultsHash = { __defaults__: {} };
 	var fileHash = { __file__: {} };
 	var envHash = { __env__: {} };
-	var json = file ? readConfig( file ) : {};
+
+	var json = options.file ? readConfig( options.file ) : {};
 	var preferCfgFile = process.env[ 'deploy-type' ] === 'DEV';
-	
+
 	var config = {
 		__env__: {},
 		// Deprecated, but still here for backwards compat ONLY
@@ -73,15 +80,32 @@ module.exports = function() {
 			return this[ key ] || defaultValue;
 		}
 	};
-	
-	parseIntoTarget( process.env, envHash, '__env__' );
-	parseIntoTarget( hash, defaults, '__defaults__' );
+
+	parseIntoTarget( process.env, envHash, '__env__', options.prefix );
+	parseIntoTarget( options.defaults || {}, defaultsHash, '__defaults__' );
 	parseIntoTarget( json, fileHash, '__file__' );
 	var fileOp = preferCfgFile ? 'merge' : 'defaults';
-	
+
 	_.merge( config, envHash );
 	deepMerge( config, fileHash, preferCfgFile );
-	deepMerge( config, defaults );
+	deepMerge( config, defaultsHash );
 
 	return config;
+}
+
+module.exports = function() {
+	var args = Array.prototype.slice.call( arguments );
+	var options = {};
+
+	var newApi = args.length === 1
+		&& _.isObject( options = args[0] )
+		&& ( options.file || options.defaults );
+
+	if ( !newApi ){
+		options = {
+			file: _.where( args, _.isString )[0],
+			defaults: _.where( args, _.isObject )[0] || {}
+		}
+	}
+	return buildConfig(options);
 };
