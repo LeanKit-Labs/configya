@@ -26,13 +26,22 @@ function ensurePath( target, val, paths ) {
 	}
 }
 
-function parseIntoTarget( source, target, cache ) {
-	var preRgx = /^[_]*/,
-		postRgx = /[_]*$/;
+function parseIntoTarget( source, target, cache, prefix ) {
+	var preRgx = /^[_]*/;
+	var prefixRgx = new RegExp("^"+prefix+"_");
+	var postRgx = /[_]*$/;
+
 	_.each( source, function( val, key ) {
-		var k = key.toLowerCase(),
-			scrubbed = key.replace( preRgx, '' ).replace( postRgx, '' ),
-			paths = scrubbed.split( '_' );
+		key = key.replace(prefixRgx,'');
+
+		var k = key.toLowerCase();
+		var scrubbed = key.replace( preRgx, '' ).replace( postRgx, '' );
+		var paths = scrubbed.split( '_' );
+
+		if(paths[0] === prefix){
+			paths.shift();
+		}
+
 		target[ key ] = val;
 		target[ k ] = val;
 		ensurePath( target, val, paths );
@@ -72,7 +81,7 @@ function buildConfig(options){
 		}
 	};
 
-	parseIntoTarget( process.env, envHash, '__env__' );
+	parseIntoTarget( process.env, envHash, '__env__', options.prefix );
 	parseIntoTarget( options.defaults || {}, defaultsHash, '__defaults__' );
 	parseIntoTarget( json, fileHash, '__file__' );
 	var fileOp = preferCfgFile ? 'merge' : 'defaults';
