@@ -20,8 +20,8 @@ describe( 'when accessing configuration data directly while providing environmen
 		var cfg;
 
 		before( function() {
-			process.env[ 'LK_MISSING_FROM_CONFIG' ] = 'lol';
-			process.env[ 'lk_override-me' ] = 'OVERRIDDEN!';
+			process.env[ 'LK__MISSING__FROM__CONFIG' ] = 'lol';
+			process.env[ 'lk__override-me' ] = 'OVERRIDDEN!';
 			cfg = require( '../src/configya.js' )({
 				file: './spec/test.json',
 				prefix: 'lk'
@@ -29,8 +29,8 @@ describe( 'when accessing configuration data directly while providing environmen
 		} );
 
 		after( function() {
-			delete process.env[ 'LK_MISSING_FROM_CONFIG' ];
-			delete process.env[ 'lk_override-me' ];
+			delete process.env[ 'LK__MISSING__FROM__CONFIG' ];
+			delete process.env[ 'lk__override-me' ];
 		} );
 
 		describe( 'with no deploy-type environment var set', function() {
@@ -81,8 +81,8 @@ describe( 'when using deprecated API while providing environment prefix', functi
 		var cfg;
 
 		before( function() {
-			process.env[ 'lk_missing_from_config' ] = 'woo!';
-			process.env[ 'lk_override-me' ] = 'I HAZ OVERRIDE!';
+			process.env[ 'lk__missing__from__config' ] = 'woo!';
+			process.env[ 'lk__override-me' ] = 'I HAZ OVERRIDE!';
 			cfg = require( '../src/configya.js' )({
 				file: './spec/test.json',
 				prefix: 'lk'
@@ -90,8 +90,8 @@ describe( 'when using deprecated API while providing environment prefix', functi
 		} );
 
 		after( function() {
-			delete process.env[ 'lk_missing_from_config' ];
-			delete process.env[ 'lk_override-me' ];
+			delete process.env[ 'lk__missing__from__config' ];
+			delete process.env[ 'lk__override-me' ];
 		} );
 
 		describe( 'with no deploy-type environment var set', function() {
@@ -106,7 +106,7 @@ describe( 'when using deprecated API while providing environment prefix', functi
 			} );
 
 			it( 'environment key should return value', function() {
-				cfg.get( 'missing_from_config' )
+				cfg.get( 'missing__from__config' )
 					.should.equal( 'woo!' );
 			} );
 

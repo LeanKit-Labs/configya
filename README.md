@@ -12,7 +12,7 @@ Stupid simple configuration.
 Unless you've set a `deploy-type` environment variable = 'DEV', `configya` will always overwrite keys from a configuration file and defaults hash with duplicates found in the environment.
 
 ### Key Parsing
-`configya` parses all sources into an object hierarchy based on `_` delimited key names. For example, if you have a key named `RABBIT_BROKER_IP` set to '127.0.0.1', and another named `RABBIT_BROKER_PORT` set to 5672, the resulting configuration object will be:
+`configya` parses all sources into an object hierarchy based on `__` delimited key names. For example, if you have a key named `RABBIT__BROKER__IP` set to '127.0.0.1', and another named `RABBIT__BROKER__PORT` set to 5672, the resulting configuration object will be:
 
 ```javascript
 {
@@ -24,10 +24,21 @@ Unless you've set a `deploy-type` environment variable = 'DEV', `configya` will 
 	}
 }
 ```
-**Note**: All keys are lower-cased to eliminate the need for guessing games (and capslock)
+**Note**: All keys are lower-cased to eliminate the need for guessing games (and capslock) with the exception of keys with `_` separating words (see below).
+
+Camel case is supported by using a single `_` underscore between words. If you have a key named `SQL__USER_NAME` (notice the single underscore `_`) set to 'siteuser', and another named `SQL__TARGET_SERVER` set to 'localhost', the resulting configuration object will be:
+
+```javascript
+{
+    sql: {
+        userName: "siteuser",
+        targetServer: "localhost"
+    }
+}
+```
 
 ### Key Prefixing
-`configya` lets you specify a prefix for your environment variables to be removed when your configuration is created. For example, if you have an environment variable `LK_RABBIT_BROKER_PORT` set to 5672, and call configya with the `prefix` option `var cfg = require( 'configya' )({prefix:'lk'});`, the resulting configuration object will be:
+`configya` lets you specify a prefix for your environment variables to be removed when your configuration is created. For example, if you have an environment variable `LK__RABBIT__BROKER__PORT` set to 5672, and call configya with the `prefix` option `var cfg = require( 'configya' )({prefix:'lk'});`, the resulting configuration object will be:
 ```javascript
 {
     rabbit: {
@@ -60,7 +71,7 @@ The original keys are technically still stored on the object based on their sour
 
 	//with a defaults hash
 	var cfg = require( 'configya' )({
-        defaults: { RABBIT_BROKER_PORT: 5672 }
+        defaults: { RABBIT__BROKER__PORT: 5672 }
     });
 
 	//with defaults and a config
@@ -84,7 +95,7 @@ The previous version of `configya` accepted multiple arguments of either a strin
      var cfg = require( 'configya' )( './path/to/configuration.json' );
 
      //with a defaults hash
-     var cfg = require( 'configya' )( { RABBIT_BROKER_PORT: 5672 } );
+     var cfg = require( 'configya' )( { RABBIT__BROKER__PORT: 5672 } );
 
      //with defaults and a config (order of args doesn't matter)
      var cfg = require( 'configya' )( { rabbit: { broker: { port: 5672 } } }, './path/to/configuration.json' );

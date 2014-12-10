@@ -50,13 +50,13 @@ describe( 'when using deprecated API (calling get())', function() {
     var cfg;
 
     before( function() {
-      process.env[ 'missing_from_config' ] = 'env';
+      process.env[ 'missing__from__config' ] = 'env';
       process.env[ 'override-me' ] = 'OVERRIDE!';
       cfg = require( '../src/configya.js' )( './spec/test.json' );
     } );
 
     after( function() {
-      delete process.env[ 'missing_from_config' ];
+      delete process.env[ 'missing__from__config' ];
       delete process.env[ 'override-me' ];
     } );
 
@@ -72,7 +72,7 @@ describe( 'when using deprecated API (calling get())', function() {
       } );
 
       it( 'environment key should return value', function() {
-        cfg.get( 'missing_from_config' )
+        cfg.get( 'missing__from__config' )
           .should.equal( 'env' );
       } );
 
@@ -106,7 +106,7 @@ describe( 'when using deprecated API (calling get())', function() {
       } );
 
       it( 'environment key should return value', function() {
-        cfg.get( 'missing_from_config' )
+        cfg.get( 'missing__from__config' )
           .should.equal( 'env' );
       } );
 
