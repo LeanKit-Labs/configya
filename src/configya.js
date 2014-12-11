@@ -14,11 +14,23 @@ function deepMerge( target, source, overwrite ) {
 	} );
 }
 
+function parseVal( val ) {
+	if ( typeof val !== "string" ) {
+		return val;
+	} else {
+		try {
+			return JSON.parse( val );
+		} catch ( e ) {
+			return val;
+		}
+	}
+}
+
 function ensurePath( target, val, paths ) {
 	var key = paths.shift();
 		k = key.toLowerCase();
 	if ( paths.length === 0 ) {
-		target[ k ] = val;
+		target[ k ] = parseVal( val );
 	} else {
 		var child = target[ k ] || {};
 		target[ k ] = child;
@@ -42,12 +54,14 @@ function parseIntoTarget( source, target, cache, prefix ) {
 			paths.shift();
 		}
 
-		target[ key ] = val;
-		target[ k ] = val;
-		ensurePath( target, val, paths );
+		var v = parseVal( val );
+
+		target[ key ] = v;
+		target[ k ] = v;
+		ensurePath( target, v, paths );
 		if( cache ) {
-			target[ cache ][ key ] = val;
-			target[ cache ][ k ] = val;
+			target[ cache ][ key ] = v;
+			target[ cache ][ k ] = v;
 		}
 	} );
 }
