@@ -22,6 +22,11 @@ describe( 'when configuring via object', function() {
 			cfg[ 'test-key' ]
 				.should.equal( 'hulloo' );
 		} );
+
+		it( 'valid key should return parsed value', function() {
+			cfg[ 'NUMBER' ]
+				.should.equal( 1234 );
+		} );
 	} );
 
 	describe( 'when loading valid config with environment variables', function() {
@@ -29,12 +34,28 @@ describe( 'when configuring via object', function() {
 
 		before( function() {
 			process.env[ 'missing_from_config' ] = 'env';
+			process.env[ 'item__camel_case' ] = 'camelCase';
+			process.env[ 'camel_case_postfix__' ] = 'postfix';
+			process.env[ '__camel_case_prefix' ] = 'prefix';
+			process.env[ 'parsed_as_boolean' ] = 'false';
+			process.env[ 'parsed_as_number_nodecimal' ] = '15142';
+			process.env[ 'parsed_as_number_decimal' ] = '15142.123';
+			process.env[ 'parsed_as_object' ] = '{"rich": "object"}';
+			process.env[ 'parsed_as_string' ] = '10p';
 			process.env[ 'override-me' ] = 'OVERRIDE!';
 			cfg = require( '../src/configya.js' )( {file:'./spec/test.json'} );
 		} );
 
 		after( function() {
 			delete process.env[ 'missing_from_config' ];
+			delete process.env[ 'item__camel_case' ];
+			delete process.env[ 'camel_case_postfix__' ];
+			delete process.env[ '__camel_case_prefix' ];
+			delete process.env[ 'parsed_as_boolean' ];
+			delete process.env[ 'parsed_as_number_nodecimal' ];
+			delete process.env[ 'parsed_as_number_decimal' ];
+			delete process.env[ 'parsed_as_object' ];
+			delete process.env[ 'parsed_as_string' ];
 			delete process.env[ 'override-me' ];
 		} );
 
@@ -47,6 +68,28 @@ describe( 'when configuring via object', function() {
 			it( 'environment key should return value', function() {
 				cfg.missing.from.config
 					.should.equal( 'env' );
+			} );
+
+			it( 'environment key with __ should support camelCase', function () {
+				cfg.item.camelCase
+					.should.equal( "camelCase" );
+				cfg.camelCasePostfix
+					.should.equal( "postfix" );
+				cfg.camelCasePrefix
+					.should.equal( "prefix" );
+			} );
+
+			it( 'environment key parsing should handle booleans, numbers and strings', function() {
+				cfg.parsed.as.boolean
+					.should.equal( false );
+				cfg.parsed.as.number.nodecimal
+					.should.equal( 15142 );
+				cfg.parsed.as.number.decimal
+					.should.equal( 15142.123 );
+				cfg.parsed.as.object
+					.should.eql( { rich: "object" } );
+				cfg.parsed.as.string
+					.should.equal( '10p' );
 			} );
 
 			it( 'environment key should override config key', function() {
@@ -152,8 +195,8 @@ describe( 'when configuring via object', function() {
 
 
 		it( 'should keep environment ports seperate', function() {
-			cfg.test.riak.port.should.equal( '8087' );
-			cfg.test.redis.port.should.equal( '6379' );
+			cfg.test.riak.port.should.equal( 8087 );
+			cfg.test.redis.port.should.equal( 6379 );
 		} );
 
 		it( 'should keep default addresses seperate', function() {
