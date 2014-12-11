@@ -28,13 +28,14 @@ describe( 'when configuring via object', function() {
 		var cfg;
 
 		before( function() {
-			process.env[ 'missing_from_config' ] = 'env';
+			process.env[ 'missing__from__config' ] = 'env';
+			process.env[ 'missing__with_camel_case' ] = 'env';
 			process.env[ 'override-me' ] = 'OVERRIDE!';
 			cfg = require( '../src/configya.js' )( {file:'./spec/test.json'} );
 		} );
 
 		after( function() {
-			delete process.env[ 'missing_from_config' ];
+			delete process.env[ 'missing__from__config' ];
 			delete process.env[ 'override-me' ];
 		} );
 
@@ -46,6 +47,12 @@ describe( 'when configuring via object', function() {
 
 			it( 'environment key should return value', function() {
 				cfg.missing.from.config
+					.should.equal( 'env' );
+			} );
+
+			it( 'environment key should return value for camelCase property', function() {
+				console.log( cfg.missing );
+				cfg.missing.withCamelCase
 					.should.equal( 'env' );
 			} );
 
@@ -62,13 +69,13 @@ describe( 'when configuring via object', function() {
 
 		before( function() {
 			process.env[ 'deploy-type' ] = 'DEV';
-			process.env[ 'missing_from_config' ] = 'env';
+			process.env[ 'missing__from__config' ] = 'env';
 			cfg = require( '../src/configya.js' )( {file:'./spec/test.json'} );
 		} );
 
 		after( function() {
 			delete process.env[ 'deploy-type' ];
-			delete process.env[ 'missing_from_config' ];
+			delete process.env[ 'missing__from__config' ];
 		} );
 
 		it( 'missing key should be missing', function() {
@@ -77,7 +84,7 @@ describe( 'when configuring via object', function() {
 		} );
 
 		it( 'environment key should return value', function() {
-			cfg[ 'missing_from_config' ]
+			cfg[ 'missing__from__config' ]
 				.should.equal( 'env' );
 		} );
 
@@ -95,12 +102,14 @@ describe( 'when configuring via object', function() {
 			cfg = require( '../src/configya.js' )( {file:'./spec/test.json'} );
 		} );
 
-		it( 'should contain original key', function() {
-			cfg[ 'NESTED_KEY' ].should.equal( 'a test of nested keys from files' );
+		it( 'should contain original keys', function() {
+			cfg[ 'NESTED__KEY' ].should.equal( 'a test of nested keys from files' );
+			cfg[ 'NESTED_KEY' ].should.equal( 'a test of nested keys with camelCase syntax' );
 		} );
 
 		it( 'should contain nested key format', function() {
 			cfg.nested.key.should.equal( 'a test of nested keys from files' );
+			cfg.nestedKey.should.equal( 'a test of nested keys with camelCase syntax' );
 		} );
 	} );
 
@@ -108,17 +117,17 @@ describe( 'when configuring via object', function() {
 		var cfg;
 
 		before( function() {
-			process.env["missing_from_config"] = "env";
+			process.env["missing__from__config"] = "env";
 			cfg = require( '../src/configya.js' )( {
 				defaults:{
-					'missing_from_config': 'override-me',
-					'default_key': 'ohhai'
+					'missing__from__config': 'override-me',
+					'default__key': 'ohhai'
 				}
 			});
 		});
 
 		after( function() {
-			delete process.env["missing_from_config"];
+			delete process.env["missing__from__config"];
 		} );
 
 		it( 'should override default key from env', function() {
@@ -133,8 +142,8 @@ describe( 'when configuring via object', function() {
 	describe( 'with identical child trees', function() {
 		var cfg
 		before( function() {
-			process.env[ 'test_redis_port' ] = 6379;
-			process.env[ 'test_riak_port' ] = 8087;
+			process.env[ 'test__redis__port' ] = 6379;
+			process.env[ 'test__riak__port' ] = 8087;
 			cfg = require( '../src/configya.js' )( {
 				defaults:{
 					test: {
@@ -146,8 +155,8 @@ describe( 'when configuring via object', function() {
 		} );
 
 		after( function() {
-			delete process.env[ 'test_redis_port' ];
-			delete process.env[ 'test_riak_port' ];
+			delete process.env[ 'test__redis__port' ];
+			delete process.env[ 'test__riak__port' ];
 		} );
 
 

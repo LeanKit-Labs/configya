@@ -27,13 +27,13 @@ describe( 'when configuring via arguments', function() {
 			var cfg;
 
 			before( function() {
-				process.env[ 'missing_from_config' ] = 'env';
+				process.env[ 'missing__from__config' ] = 'env';
 				process.env[ 'override-me' ] = 'OVERRIDE!';
 				cfg = require( '../src/configya.js' )( './spec/test.json' );
 			} );
 
 			after( function() {
-				delete process.env[ 'missing_from_config' ];
+				delete process.env[ 'missing__from__config' ];
 				delete process.env[ 'override-me' ];
 			} );
 
@@ -63,13 +63,13 @@ describe( 'when configuring via arguments', function() {
 
 		before( function() {
 			process.env[ 'deploy-type' ] = 'DEV';
-			process.env[ 'missing_from_config' ] = 'env';
+			process.env[ 'missing__from__config' ] = 'env';
 			cfg = require( '../src/configya.js' )( './spec/test.json' );
 		} );
 
 		after( function() {
 			delete process.env[ 'deploy-type' ];
-			delete process.env[ 'missing_from_config' ];
+			delete process.env[ 'missing__from__config' ];
 		} );
 
 		it( 'missing key should be missing', function() {
@@ -78,7 +78,7 @@ describe( 'when configuring via arguments', function() {
 		} );
 
 		it( 'environment key should return value', function() {
-			cfg[ 'missing_from_config' ]
+			cfg[ 'missing__from__config' ]
 				.should.equal( 'env' );
 		} );
 
@@ -97,7 +97,7 @@ describe( 'when configuring via arguments', function() {
 		} );
 
 		it( 'should contain original key', function() {
-			cfg[ 'NESTED_KEY' ].should.equal( 'a test of nested keys from files' );
+			cfg[ 'NESTED__KEY' ].should.equal( 'a test of nested keys from files' );
 		} );
 
 		it( 'should contain nested key format', function() {
@@ -109,12 +109,12 @@ describe( 'when configuring via arguments', function() {
 		var cfg;
 
 		before( function() {
-			process.env["missing_from_config"] = "env";
-			cfg = require( '../src/configya.js' )( { 'missing_from_config': 'override-me', 'default_key': 'ohhai' } );
+			process.env["missing__from__config"] = "env";
+			cfg = require( '../src/configya.js' )( { 'missing__from__config': 'override-me', 'default__key': 'ohhai' } );
 		} );
 
 		after( function() {
-			delete process.env["missing_from_config"];
+			delete process.env["missing__from__config"];
 		} );
 
 		it( 'should override default key from env', function() {
@@ -129,8 +129,8 @@ describe( 'when configuring via arguments', function() {
 	describe( 'with identical child trees', function() {
 		var cfg
 		before( function() {
-			process.env[ 'test_redis_port' ] = 6379;
-			process.env[ 'test_riak_port' ] = 8087;
+			process.env[ 'test__redis__port' ] = 6379;
+			process.env[ 'test__riak__port' ] = 8087;
 			cfg = require( '../src/configya.js' )(
 				{
 					test: {
@@ -141,8 +141,8 @@ describe( 'when configuring via arguments', function() {
 		} );
 
 		after( function() {
-			delete process.env[ 'test_redis_port' ];
-			delete process.env[ 'test_riak_port' ];
+			delete process.env[ 'test__redis__port' ];
+			delete process.env[ 'test__riak__port' ];
 		} );
 
 
