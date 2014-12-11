@@ -21,6 +21,7 @@ describe( 'when accessing configuration data directly while providing environmen
 
 		before( function() {
 			process.env[ 'LK_MISSING_FROM_CONFIG' ] = 'lol';
+			process.env[ 'LK__CAMEL_CASE' ] = 'camelCase';
 			process.env[ 'lk_override-me' ] = 'OVERRIDDEN!';
 			cfg = require( '../src/configya.js' )({
 				file: './spec/test.json',
@@ -30,6 +31,7 @@ describe( 'when accessing configuration data directly while providing environmen
 
 		after( function() {
 			delete process.env[ 'LK_MISSING_FROM_CONFIG' ];
+			delete process.env[ 'LK__CAMEL_CASE' ];
 			delete process.env[ 'lk_override-me' ];
 		} );
 
@@ -42,6 +44,11 @@ describe( 'when accessing configuration data directly while providing environmen
 			it( 'environment key should return value', function() {
 				cfg.missing.from.config
 					.should.equal( 'lol' );
+			} );
+
+			it( 'environment key with __ should support camelCase', function () {
+				cfg.camelCase
+					.should.equal( "camelCase" );
 			} );
 
 			it( 'environment key should override config key', function() {

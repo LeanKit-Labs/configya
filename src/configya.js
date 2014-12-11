@@ -28,30 +28,44 @@ function parseVal( val ) {
 
 function ensurePath( target, val, paths ) {
 	var key = paths.shift();
-		k = key.toLowerCase();
 	if ( paths.length === 0 ) {
-		target[ k ] = parseVal( val );
+		target[ key ] = parseVal( val );
 	} else {
-		var child = target[ k ] || {};
-		target[ k ] = child;
+		var child = target[ key ] || {};
+		target[ key ] = child;
 		ensurePath( child, val, paths );
 	}
 }
 
+function camelCaseParts( str, sep ) {
+	return str.split( sep ).map( function ( item, i ) {
+		if ( i > 0 ) {
+			return item[0].toUpperCase() + item.substr(1);
+		} else {
+			return item;
+		}
+	}).join('');
+}
+
 function parseIntoTarget( source, target, cache, prefix ) {
 	var preRgx = /^[_]*/;
-	var prefixRgx = new RegExp("^"+prefix+"_","i");
+	var prefixRgx = new RegExp("^"+prefix+"_{1,2}","i");
 	var postRgx = /[_]*$/;
 
 	_.each( source, function( val, key ) {
+		var processWithCase = /__/.test( key );
+
 		key = key.replace(prefixRgx,'');
 
 		var k = key.toLowerCase();
-		var scrubbed = key.replace( preRgx, '' ).replace( postRgx, '' );
-		var paths = scrubbed.split( '_' );
-
-		if(prefixRgx.test(paths[0])){
-			paths.shift();
+		var scrubbed = k.replace( preRgx, '' ).replace( postRgx, '' );
+		var paths;
+		if ( processWithCase ) {
+			paths = scrubbed.split( '__' ).map( function ( part ) {
+				return camelCaseParts( part, '_' );
+			});
+		} else {
+			paths = scrubbed.split( '_' );
 		}
 
 		var v = parseVal( val );

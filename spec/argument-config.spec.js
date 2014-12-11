@@ -34,6 +34,9 @@ describe( 'when configuring via arguments', function() {
 
 		before( function() {
 			process.env[ 'missing_from_config' ] = 'env';
+			process.env[ 'item__camel_case' ] = 'camelCase';
+			process.env[ 'camel_case_postfix__' ] = 'postfix';
+			process.env[ '__camel_case_prefix' ] = 'prefix';
 			process.env[ 'parsed_as_boolean' ] = 'false';
 			process.env[ 'parsed_as_number_nodecimal' ] = '15142';
 			process.env[ 'parsed_as_number_decimal' ] = '15142.123';
@@ -45,6 +48,9 @@ describe( 'when configuring via arguments', function() {
 
 		after( function() {
 			delete process.env[ 'missing_from_config' ];
+			delete process.env[ 'item__camel_case' ];
+			delete process.env[ 'camel_case_postfix__' ];
+			delete process.env[ '__camel_case_prefix' ];
 			delete process.env[ 'parsed_as_boolean' ];
 			delete process.env[ 'parsed_as_number_nodecimal' ];
 			delete process.env[ 'parsed_as_number_decimal' ];
@@ -62,6 +68,15 @@ describe( 'when configuring via arguments', function() {
 			it( 'environment key should return value', function() {
 				cfg.missing.from.config
 					.should.equal( 'env' );
+			} );
+
+			it( 'environment key with __ should support camelCase', function () {
+				cfg.item.camelCase
+					.should.equal( "camelCase" );
+				cfg.camelCasePostfix
+					.should.equal( "postfix" );
+				cfg.camelCasePrefix
+					.should.equal( "prefix" );
 			} );
 
 			it( 'environment key parsing should handle booleans, numbers and strings', function() {
