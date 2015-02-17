@@ -2,12 +2,17 @@
   "name": "configya",
   "version": "0.2.0",
   "description": "Config files that defer to env settings.",
+  "homepage": "https://github.com/LeanKit-Labs/configya",
   "main": "src/configya.js",
   "scripts": {
     "test": "gulp test"
   },
   "author": "LeanKit",
   "license": "MIT License - http://opensource.org/licenses/MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/LeanKit-Labs/configya.git"
+  },
   "devDependencies": {
     "gulp": "^3.8.6",
     "gulp-mocha": "~0.4.1",
