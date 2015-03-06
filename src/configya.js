@@ -131,8 +131,8 @@ module.exports = function() {
 
 	if ( !newApi ){
 		options = {
-			file: _.where( args, _.isString )[0],
-			defaults: _.where( args, _.isObject )[0] || {}
+			file: _.filter( args, _.isString )[0],
+			defaults: _.filter( args, _.isObject )[0] || {}
 		}
 	}
 	return buildConfig(options);
