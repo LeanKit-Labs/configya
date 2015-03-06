@@ -19,6 +19,6 @@
     "should": "~3.2.0-beta1"
   },
   "dependencies": {
-    "lodash": "^2.4.1"
+    "lodash": "^3.3.1"
   }
 }
