@@ -1,24 +1,47 @@
 {
-  "name": "configya",
-  "version": "0.2.0",
-  "description": "Config files that defer to env settings.",
-  "homepage": "https://github.com/LeanKit-Labs/configya",
-  "main": "src/configya.js",
-  "scripts": {
-    "test": "gulp test"
-  },
-  "author": "LeanKit",
-  "license": "MIT License - http://opensource.org/licenses/MIT",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/LeanKit-Labs/configya.git"
-  },
-  "devDependencies": {
-    "gulp": "^3.8.6",
-    "gulp-mocha": "~0.4.1",
-    "should": "~3.2.0-beta1"
-  },
-  "dependencies": {
-    "lodash": "^3.3.1"
-  }
+	"name": "configya",
+	"version": "0.2.1",
+	"description": "Config files that defer to env settings.",
+	"homepage": "https://github.com/LeanKit-Labs/configya",
+	"main": "src/configya.js",
+	"scripts": {
+		"test": "gulp test"
+	},
+	"contributors": [
+		{
+      "name": "Alex Robson",
+      "email": "asrobson@gmail.com",
+      "url": "http://github.com/arobson"
+    },
+    {
+      "name": "Josh Bush",
+      "url": "http://digitalbush.com"
+    },
+    {
+      "name": "Doug Neiner",
+      "url": "http://code.dougneiner.com"
+    },
+    {
+      "name": "Jim Cowart",
+      "url": "http://ifandelse.com"
+    },
+    {
+      "name": "Ryan Niemeyer",
+      "url": "http://knockmeout.net/"
+    }
+	],
+	"author": "LeanKit",
+	"license": "MIT License - http://opensource.org/licenses/MIT",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/LeanKit-Labs/configya.git"
+	},
+	"devDependencies": {
+		"gulp": "^3.8.6",
+		"gulp-mocha": "~0.4.1",
+		"should": "~3.2.0-beta1"
+	},
+	"dependencies": {
+		"lodash": "^3.3.1"
+	}
 }
