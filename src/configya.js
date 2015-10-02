@@ -5,7 +5,7 @@ var _ = require( 'lodash' );
 function deepMerge( target, source, overwrite ) {
 	_.each( source, function( val, key ) {
 		var original = target[ key ];
-		if( _.isObject( val ) ) {
+		if( _.isPlainObject( val ) ) {
 			if( original ) { deepMerge( original, val ); }
 			else { target[ key ] = val; }
 		} else {

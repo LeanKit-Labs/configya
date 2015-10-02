@@ -4,5 +4,10 @@
 	"NESTED_KEY": "a test of nested keys from files",
 	"INTEGRATION_AGENT_LOGLEVEL": "trace",
 	"INTEGRATION_AGENT_ID": "test123",
-	"NUMBER": "1234"
+	"NUMBER": "1234",
+	"parsed": {
+		"as": {
+			"array": [ 4, 5, 6, 7, 8 ]
+		}
+	}
 }

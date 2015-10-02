@@ -41,6 +41,7 @@ describe( 'when configuring via arguments', function() {
 			process.env[ 'parsed_as_number_nodecimal' ] = '15142';
 			process.env[ 'parsed_as_number_decimal' ] = '15142.123';
 			process.env[ 'parsed_as_object' ] = '{"rich": "object"}';
+			process.env[ 'parsed_as_array' ] = '[1,2,3]';
 			process.env[ 'parsed_as_string' ] = '10p';
 			process.env[ 'override-me' ] = 'OVERRIDE!';
 			cfg = require( '../src/configya.js' )( './spec/test.json' );
@@ -55,6 +56,7 @@ describe( 'when configuring via arguments', function() {
 			delete process.env[ 'parsed_as_number_nodecimal' ];
 			delete process.env[ 'parsed_as_number_decimal' ];
 			delete process.env[ 'parsed_as_object' ];
+			delete process.env[ 'parsed_as_array' ];
 			delete process.env[ 'parsed_as_string' ];
 			delete process.env[ 'override-me' ];
 		} );
@@ -79,7 +81,7 @@ describe( 'when configuring via arguments', function() {
 					.should.equal( "prefix" );
 			} );
 
-			it( 'environment key parsing should handle booleans, numbers and strings', function() {
+			it( 'environment key parsing should handle booleans, numbers, strings, objects, and arrays', function() {
 				cfg.parsed.as.boolean
 					.should.equal( false );
 				cfg.parsed.as.number.nodecimal
@@ -88,6 +90,9 @@ describe( 'when configuring via arguments', function() {
 					.should.equal( 15142.123 );
 				cfg.parsed.as.object
 					.should.eql( { rich: "object" } );
+				cfg.parsed.as.array
+					.should.eql( [ 1, 2, 3 ] );
+
 				cfg.parsed.as.string
 					.should.equal( '10p' );
 			} );
