@@ -1,6 +1,6 @@
 {
 	"name": "configya",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "Config files that defer to env settings.",
 	"homepage": "https://github.com/LeanKit-Labs/configya",
 	"main": "src/configya.js",
