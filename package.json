@@ -5,7 +5,10 @@
 	"homepage": "https://github.com/LeanKit-Labs/configya",
 	"main": "src/configya.js",
 	"scripts": {
-		"test": "gulp test"
+		"test:only": "NODE_ENV=test mocha --exit -R spec 'spec/**/*.spec.js'",
+		"test": "npm run cover",
+		"cover": "nyc -r text-summary -r html -- npm run test:only",
+		"cover:show": "open \"file://$PWD/coverage/index.html\""
 	},
 	"contributors": [
 		{
@@ -40,11 +43,21 @@
 		"url": "git://github.com/LeanKit-Labs/configya.git"
 	},
 	"devDependencies": {
-		"gulp": "^3.8.6",
-		"gulp-mocha": "~0.4.1",
+		"mocha": "^8.2.1",
+		"nyc": "^15.1.0",
+		"open": "^7.3.0",
 		"should": "~3.2.0-beta1"
 	},
 	"dependencies": {
-		"lodash": "^3.3.1"
+		"lodash": "^4.17.20"
+	},
+	"nyc": {
+		"exclude": [
+			"coverage",
+			"spec"
+		],
+		"sourceMap": false,
+		"instrument": true,
+		"all": true
 	}
 }
